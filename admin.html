@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Inventory Manager — Sofa Cycle Canada</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0B1E33;--navy-2:#102A44;--card:#14293F;--gold:#F5B819;--gold-l:#FFD166;
+  --sky:#38B6FF;--green:#4FC98A;--red:#E0656D;
+  --text:#E4EEF6;--muted:#A9C0D4;--dim:#7C97AF;
+  --line:rgba(255,255,255,.1);--line-2:rgba(255,255,255,.18);
+}
+body{font-family:'Inter',sans-serif;background:#0B1E33;color:var(--text);line-height:1.6;
+  -webkit-font-smoothing:antialiased;padding-bottom:90px}
+h1,h2,h3{font-family:'Nunito';font-weight:900;color:#fff;line-height:1.2}
+a{color:var(--gold)}
+
+/* ── GATE ── */
+#gate{position:fixed;inset:0;z-index:900;background:var(--navy);display:flex;
+  align-items:center;justify-content:center;padding:20px}
+.gate-box{background:var(--card);border:1px solid var(--line-2);border-radius:18px;
+  padding:34px 30px;max-width:390px;width:100%;text-align:center}
+.gate-box img{width:74px;height:74px;border-radius:14px;object-fit:contain;margin-bottom:16px}
+.gate-box h1{font-size:1.3rem;margin-bottom:6px}
+.gate-box p{color:var(--muted);font-size:.86rem;margin-bottom:20px}
+.gate-note{font-size:.75rem;color:var(--dim);margin-top:16px;line-height:1.55;text-align:left;
+  background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+
+/* ── SHELL ── */
+header{background:var(--navy-2);border-bottom:1px solid var(--line);padding:16px 5vw;
+  position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.hd-l{display:flex;align-items:center;gap:12px}
+.hd-l img{width:40px;height:40px;border-radius:9px;object-fit:contain}
+.hd-t{font-family:'Nunito';font-weight:900;font-size:1rem;color:#fff}
+.hd-s{font-size:.76rem;color:var(--dim)}
+.wrap{max-width:1180px;margin:0 auto;padding:26px 5vw}
+
+/* ── BUTTONS ── */
+button,.btn{font-family:'Nunito';font-weight:800;cursor:pointer;border:none;border-radius:9px;
+  transition:all .18s;font-size:.87rem;padding:11px 18px}
+.b-gold{background:var(--gold);color:var(--navy)}
+.b-gold:hover{background:var(--gold-l)}
+.b-out{background:transparent;color:var(--text);border:1px solid var(--line-2)}
+.b-out:hover{border-color:var(--gold);color:var(--gold)}
+.b-red{background:transparent;color:var(--red);border:1px solid rgba(224,101,109,.4)}
+.b-red:hover{background:rgba(224,101,109,.12)}
+.b-sm{padding:6px 12px;font-size:.78rem}
+button:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── FORM ── */
+.field{margin-bottom:14px}
+label{display:block;font-size:.79rem;font-weight:700;margin-bottom:5px;color:var(--text)}
+label .opt{font-weight:400;color:var(--dim);font-size:.73rem}
+input,select,textarea{width:100%;padding:10px 13px;border:1px solid var(--line-2);border-radius:9px;
+  font-size:.88rem;font-family:'Inter';background:var(--card);color:#fff;transition:border-color .18s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(245,184,25,.13)}
+textarea{resize:vertical;min-height:70px}
+select option{background:var(--navy-2)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.hint{font-size:.73rem;color:var(--dim);margin-top:4px;line-height:1.5}
+.warn{font-size:.76rem;color:var(--gold);margin-top:5px;line-height:1.5;display:none}
+.warn.show{display:block}
+.check{display:flex;align-items:flex-start;gap:9px;cursor:pointer;
+  background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+.check input{width:16px;height:16px;margin-top:2px;accent-color:var(--gold);flex-shrink:0}
+.check span{font-size:.82rem;color:var(--muted);line-height:1.5}
+
+/* ── DROPZONE ── */
+.drop{border:2px dashed var(--line-2);border-radius:13px;padding:28px 20px;text-align:center;
+  cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02)}
+.drop:hover,.drop.over{border-color:var(--gold);background:rgba(245,184,25,.05)}
+.drop-ic{font-size:2.2rem;margin-bottom:8px}
+.drop-t{font-family:'Nunito';font-weight:800;font-size:.92rem;margin-bottom:4px;color:#fff}
+.drop-s{font-size:.78rem;color:var(--dim);line-height:1.5}
+.prev-wrap{margin-top:14px;display:none}
+.prev-wrap.show{display:block}
+.prev-img{width:100%;max-width:260px;border-radius:11px;border:1px solid var(--line-2);display:block}
+.prev-meta{font-size:.77rem;color:var(--dim);margin-top:8px;line-height:1.6}
+.prev-meta b{color:var(--green)}
+
+/* ── LIST ── */
+.list{display:grid;gap:12px;margin-top:6px}
+.item{background:var(--card);border:1px solid var(--line-2);border-radius:13px;padding:14px;
+  display:grid;grid-template-columns:78px 1fr auto;gap:14px;align-items:center}
+.item.sold{opacity:.55}
+.item img{width:78px;height:78px;object-fit:cover;border-radius:9px;background:var(--navy-2)}
+.item .ph{width:78px;height:78px;border-radius:9px;background:var(--navy-2);display:flex;
+  align-items:center;justify-content:center;font-size:1.8rem}
+.it-n{font-family:'Nunito';font-weight:800;font-size:.95rem;color:#fff;margin-bottom:2px}
+.it-m{font-size:.78rem;color:var(--dim)}
+.it-p{font-family:'Nunito';font-weight:900;color:var(--gold);font-size:1.05rem;margin-top:3px}
+.it-p s{color:var(--dim);font-weight:500;font-size:.78rem;margin-right:5px}
+.it-acts{display:flex;flex-direction:column;gap:6px}
+.pill{display:inline-block;padding:2px 9px;border-radius:11px;font-size:.68rem;font-weight:800;margin-left:6px}
+.p-available{background:rgba(79,201,138,.16);color:var(--green)}
+.p-reserved{background:rgba(245,184,25,.16);color:var(--gold)}
+.p-sold{background:rgba(160,180,200,.14);color:var(--dim)}
+
+/* ── PANELS ── */
+.panel{background:var(--card);border:1px solid var(--line-2);border-radius:16px;padding:22px;margin-bottom:20px}
+.panel h2{font-size:1.05rem;margin-bottom:4px}
+.panel .sub{font-size:.83rem;color:var(--muted);margin-bottom:18px}
+.sec-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap}
+.sec-h h2{font-size:1.15rem}
+.count{font-size:.8rem;color:var(--dim)}
+
+/* ── EXPORT BAR ── */
+.exportbar{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(16,42,68,.97);
+  backdrop-filter:blur(14px);border-top:1px solid var(--line-2);padding:13px 5vw;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.eb-l{font-size:.83rem;color:var(--muted)}
+.eb-l b{color:#fff;font-family:'Nunito'}
+.eb-r{display:flex;gap:9px;flex-wrap:wrap}
+.dirty{color:var(--gold);font-weight:700}
+
+/* ── MODAL ── */
+.ov{display:none;position:fixed;inset:0;z-index:600;background:rgba(5,15,26,.8);
+  backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:16px}
+.ov.open{display:flex}
+.modal{background:var(--navy-2);border:1px solid var(--line-2);border-radius:18px;
+  width:100%;max-width:620px;max-height:92vh;overflow-y:auto;padding:26px}
+.modal h2{font-size:1.15rem;margin-bottom:4px}
+.modal .sub{font-size:.83rem;color:var(--muted);margin-bottom:20px}
+.mfoot{display:flex;gap:10px;margin-top:20px}
+.mfoot button{flex:1}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(120px);
+  z-index:700;background:var(--green);color:#04241a;padding:12px 22px;border-radius:10px;
+  font-size:.86rem;font-weight:800;font-family:'Nunito';box-shadow:0 10px 34px rgba(0,0,0,.4);
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+.steps{background:rgba(56,182,255,.07);border:1px solid rgba(56,182,255,.28);border-radius:12px;
+  padding:16px 18px;margin-bottom:20px}
+.steps h3{font-size:.9rem;color:var(--sky);margin-bottom:9px}
+.steps ol{margin-left:18px;font-size:.84rem;color:var(--muted);line-height:1.85}
+.steps b{color:var(--text)}
+
+@media(max-width:700px){
+  .row,.row-3{grid-template-columns:1fr}
+  .item{grid-template-columns:60px 1fr;gap:11px}
+  .item img,.item .ph{width:60px;height:60px}
+  .it-acts{grid-column:1/-1;flex-direction:row;flex-wrap:wrap}
+  .exportbar{flex-direction:column;align-items:stretch}
+  .eb-r{justify-content:stretch}.eb-r button{flex:1}
+}
+
+/* multi-photo staging */
+.pending-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:9px;margin-bottom:10px}
+.pend{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;border:1px solid var(--line-2)}
+.pend img{width:100%;height:100%;object-fit:cover}
+.pend-x{position:absolute;top:4px;right:4px;background:rgba(11,30,51,.85);color:#fff;border:none;
+  width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:.72rem;padding:0;
+  display:flex;align-items:center;justify-content:center}
+.pend-x:hover{background:var(--red)}
+.pend-main{position:absolute;bottom:0;left:0;right:0;background:rgba(245,184,25,.92);color:var(--navy);
+  font-size:.6rem;font-weight:900;text-align:center;padding:2px;font-family:'Nunito';letter-spacing:.04em}
+
+/* margin calculator */
+.margin-box{background:rgba(79,201,138,.06);border:1px solid rgba(79,201,138,.24);
+  border-radius:12px;padding:15px 16px;margin-bottom:14px}
+.margin-t{font-family:'Nunito';font-weight:800;font-size:.85rem;color:var(--green);margin-bottom:11px}
+.margin-out{font-size:.84rem;color:var(--muted);line-height:1.6;padding-top:9px;
+  border-top:1px solid rgba(79,201,138,.18)}
+.margin-out b{color:#fff}
+.mg-ok{color:#9FE5C1} .mg-warn{color:var(--gold)}
+
+/* ── On hold ── */
+.pill.p-hold{background:rgba(245,184,25,.16);color:#F5B819}
+.item.held{opacity:.86;border-color:rgba(245,184,25,.3)}
+
+/* ── Marketplace importer ── */
+.importer{background:rgba(107,165,221,.07);border:1px solid rgba(107,165,221,.26);
+  border-radius:12px;margin-bottom:16px;overflow:hidden}
+.importer summary{padding:13px 16px;cursor:pointer;font-family:'Nunito';font-weight:800;
+  font-size:.88rem;color:#8FC4F0;list-style:none;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.importer summary::-webkit-details-marker{display:none}
+.importer[open] summary{border-bottom:1px solid rgba(107,165,221,.2)}
+.imp-ic{font-size:1rem}
+.imp-body{padding:15px 16px}
+.imp-help{font-size:.81rem;color:var(--muted);line-height:1.65;margin:0 0 11px}
+.imp-help b{color:var(--text)}
+.imp-ta{width:100%;background:var(--navy);border:1px solid var(--line-2);border-radius:10px;
+  padding:11px 13px;color:var(--text);font-size:.85rem;font-family:inherit;line-height:1.55;
+  resize:vertical;box-sizing:border-box}
+.imp-ta:focus{outline:none;border-color:var(--sky)}
+.imp-row{display:flex;gap:9px;margin-top:11px;flex-wrap:wrap}
+.btn-ghost{background:transparent;border:1px solid var(--line-2);color:var(--muted);
+  border-radius:9px;padding:10px 16px;cursor:pointer;font-size:.84rem;font-weight:600}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold)}
+.imp-out:empty{display:none}
+.imp-ok{margin-top:13px;background:rgba(79,201,138,.09);border:1px solid rgba(79,201,138,.28);
+  border-radius:10px;padding:12px 14px;font-size:.83rem;color:var(--text);line-height:1.6}
+.imp-list{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0}
+.imp-list span{background:rgba(79,201,138,.14);color:#9FE5C1;border-radius:6px;
+  padding:3px 9px;font-size:.74rem;font-weight:600}
+.imp-miss{font-size:.79rem;color:var(--gold);margin-top:6px;line-height:1.55}
+.imp-miss b{color:#FFD166}
+.imp-no{margin-top:13px;background:rgba(245,184,25,.09);border:1px solid rgba(245,184,25,.26);
+  border-radius:10px;padding:12px 14px;font-size:.83rem;color:var(--muted);line-height:1.6}
+
+/* ── Bulk add (section per sofa) ── */
+.bulk-panel{background:rgba(245,184,25,.06);border:1px solid rgba(245,184,25,.3);
+  border-radius:16px;margin-bottom:20px;overflow:hidden}
+.bulk-panel summary{padding:16px 20px;cursor:pointer;font-family:'Nunito';font-weight:900;
+  font-size:1.02rem;color:var(--gold-l);list-style:none;display:flex;align-items:center;
+  gap:9px;flex-wrap:wrap}
+.bulk-panel summary::-webkit-details-marker{display:none}
+.bulk-panel summary .opt{font-family:'Inter';font-weight:400}
+.bulk-panel[open] summary{border-bottom:1px solid rgba(245,184,25,.22)}
+.bd-x{background:transparent;border:1px solid var(--line-2);color:var(--dim);
+  width:30px;height:30px;border-radius:8px;padding:0;flex-shrink:0;font-size:.8rem}
+.bd-x:hover{border-color:var(--red);color:var(--red)}
+.bd-dollar{color:var(--gold);font-weight:800;font-family:'Nunito'}
+
+.bs-empty{text-align:center;color:var(--muted);font-size:.85rem;padding:20px;
+  border:1px dashed var(--line-2);border-radius:12px}
+.bs-empty b{color:var(--gold)}
+.bs-sec{background:var(--navy);border:1px solid var(--line-2);border-radius:13px;
+  padding:14px;margin-bottom:13px}
+.bs-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bs-num{width:26px;height:26px;flex-shrink:0;border-radius:50%;background:var(--gold);
+  color:var(--navy);font-family:'Nunito';font-weight:900;font-size:.82rem;
+  display:flex;align-items:center;justify-content:center}
+.bs-name{flex:1;min-width:0;background:transparent;border:none;border-bottom:1.5px solid var(--line-2);
+  border-radius:0;padding:4px 0 7px;font-family:'Nunito';font-weight:800;font-size:1rem;color:#fff}
+.bs-name:focus{outline:none;border-color:var(--gold);box-shadow:none}
+.bs-drop{border:2px dashed var(--line-2);border-radius:11px;padding:16px;text-align:center;
+  cursor:pointer;transition:all .18s;background:rgba(255,255,255,.02);
+  display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px}
+.bs-drop:hover,.bs-drop.over{border-color:var(--gold);background:rgba(245,184,25,.05)}
+.bs-drop-ic{font-size:1.4rem}
+.bs-drop-t{font-size:.83rem;color:var(--muted);font-weight:600}
+.bs-fields{display:flex;gap:9px;margin-bottom:9px;flex-wrap:wrap}
+.bs-price-wrap{display:flex;align-items:center;gap:5px}
+.bs-price{width:96px;padding:8px 10px;font-size:.85rem}
+.bs-sel{flex:1;min-width:120px;padding:8px 10px;font-size:.83rem;width:auto}
+.bs-in{flex:1;min-width:130px;padding:8px 10px;font-size:.83rem}
+.bs-note{width:100%}
+.bs-add-row{display:flex;gap:9px;margin-top:4px;flex-wrap:wrap}
+.bs-commit{margin-top:15px;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap}
+.bs-commit:empty{display:none}
+.bs-status{font-size:.86rem;color:var(--text)}
+.bs-status b{font-family:'Nunito';color:var(--green)}
+.bs-inc{color:var(--gold);font-weight:600}
+
+/* ── Needs-photo flag in the main list ── */
+.pill.p-nophoto{background:rgba(56,182,255,.16);color:#8FD0FF}
+.item.nophoto{border-color:rgba(56,182,255,.3)}
+
+/* ── Live publish setup ── */
+.pub-panel{background:rgba(79,201,138,.06);border:1px solid rgba(79,201,138,.28);
+  border-radius:16px;margin-bottom:20px;overflow:hidden}
+.pub-panel summary{padding:15px 20px;cursor:pointer;font-family:'Nunito';font-weight:900;
+  font-size:.98rem;color:#8FE3B6;list-style:none;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.pub-panel summary::-webkit-details-marker{display:none}
+.pub-panel summary .opt{font-family:'Inter';font-weight:400}
+.pub-panel[open] summary{border-bottom:1px solid rgba(79,201,138,.2)}
+.pub-status{font-size:.83rem;margin-top:10px;line-height:1.5}
+.pub-status.ok{color:#9FE5C1}.pub-status.bad{color:var(--gold)}
+.pub-help{font-size:.78rem;color:var(--dim);line-height:1.7;margin-top:14px;
+  background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.pub-help b{color:var(--muted)}
+.pub-log{font-size:.8rem;color:var(--muted);line-height:1.6;margin-top:6px}
+.pub-log b{color:#fff}
+</style>
+</head>
+<body>
+
+<!-- ══ PASSWORD GATE ══ -->
+<div id="gate">
+  <div class="gate-box">
+    <img src="assets/logo.png" alt="">
+    <h1>Inventory Manager</h1>
+    <p>Sofa Cycle Canada</p>
+    <div class="field">
+      <input type="password" id="pw" placeholder="Passcode" onkeydown="if(event.key==='Enter')unlock()">
+    </div>
+    <button class="b-gold" style="width:100%" onclick="unlock()">Unlock</button>
+    <div class="gate-note">
+      <b style="color:var(--gold)">Worth knowing:</b> this passcode keeps casual visitors out, but
+      anyone who views the page source can read it. That's fine — this tool only <i>generates files</i>
+      on your device. It can't change your live site. Only you can do that, by uploading to Netlify.
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="hd-l">
+    <img src="assets/logo.png" alt="">
+    <div><div class="hd-t">Inventory Manager</div><div class="hd-s">Sofa Cycle Canada</div></div>
+  </div>
+  <button class="b-out b-sm" onclick="location.href='index.html'">View site →</button>
+</header>
+
+<div class="wrap">
+
+  <div class="steps">
+    <h3>How this works — from your phone</h3>
+    <ol>
+      <li>Add, edit or remove sofas below — photos from your camera roll are resized automatically</li>
+      <li>Hit <b>🚀 Publish to live site</b> — it sends everything to GitHub and Netlify rebuilds</li>
+      <li>Live in about 30 seconds. No zip, no upload.</li>
+    </ol>
+    <p style="font-size:.8rem;color:var(--dim);margin-top:8px">
+      First time only: open <b>⚙️ Live publish setup</b> below and enter your GitHub details once.
+      <b>Download full site</b> is still there as a backup.</p>
+  </div>
+
+  <!-- LIVE PUBLISH SETUP -->
+  <details class="pub-panel" id="pubPanel">
+    <summary><span class="imp-ic">⚙️</span> Live publish setup
+      <span class="opt">— connect GitHub once, then just press Publish</span></summary>
+    <div class="imp-body">
+      <p class="imp-help">Enter these once. They're saved <b>only in this browser on this device</b> —
+        never in the site, never sent anywhere except GitHub.</p>
+      <div class="row">
+        <div class="field"><label>GitHub username</label>
+          <input id="gh_owner" placeholder="e.g. jamal-sofacycle" autocapitalize="off" autocorrect="off"></div>
+        <div class="field"><label>Repository name</label>
+          <input id="gh_repo" placeholder="e.g. sofacyclecanada" autocapitalize="off" autocorrect="off"></div>
+      </div>
+      <div class="row">
+        <div class="field"><label>Branch <span class="opt">(usually main)</span></label>
+          <input id="gh_branch" placeholder="main" autocapitalize="off" autocorrect="off"></div>
+        <div class="field"><label>Access token</label>
+          <input id="gh_token" type="password" placeholder="github_pat_…" autocapitalize="off" autocorrect="off"></div>
+      </div>
+      <div class="imp-row">
+        <button class="b-gold" onclick="saveGhConfig()">Save connection</button>
+        <button class="btn-ghost" onclick="clearGhConfig()">Forget it</button>
+      </div>
+      <div class="pub-status" id="ghStatus"></div>
+      <div class="pub-help">
+        <b>Getting your token (one time):</b> On github.com → your photo → <b>Settings</b> →
+        <b>Developer settings</b> → <b>Personal access tokens</b> → <b>Fine-grained tokens</b> →
+        <b>Generate new token</b>. Under <b>Repository access</b> pick <b>Only select repositories</b>
+        and choose your site repo. Under <b>Permissions → Repository permissions</b>, set
+        <b>Contents</b> to <b>Read and write</b>. Generate, copy it, paste above.
+        It's like a key to that one repo only — you can delete it anytime on that same page.
+      </div>
+    </div>
+  </details>
+
+  <!-- BULK ADD -->
+  <details class="bulk-panel" id="bulkPanel">
+    <summary>
+      <span class="imp-ic">⚡</span> Bulk add — a section per sofa
+      <span class="opt">— drop photos, name each one, add them all</span>
+    </summary>
+    <div class="imp-body">
+      <p class="imp-help">One section per sofa. <b>Drop the photos in</b>, type the <b>name</b> at the
+        top, set a price, and add as many sections as you're listing. When you're done, add them all
+        in one tap — photos and all.</p>
+      <div id="bulkSections"></div>
+      <div class="bs-add-row">
+        <button class="btn-ghost" onclick="addBulkSection()">+ Add another sofa</button>
+        <button class="btn-ghost" onclick="clearBulkSections()">Clear all</button>
+      </div>
+      <div class="bs-commit" id="bsCommit"></div>
+    </div>
+  </details>
+
+  <!-- ADD -->
+  <div class="panel">
+    <h2>Add a sofa</h2>
+    <div class="sub">Photo first — everything else is quick. <span style="color:var(--dim)">Adding a batch? Use ⚡ Bulk add above.</span></div>
+
+    <div class="field">
+      <label>Photo</label>
+      <div class="drop" id="drop" onclick="document.getElementById('file').click()">
+        <div class="drop-ic">📷</div>
+        <div class="drop-t">Tap to add photos, or drag them here</div>
+        <div class="drop-s">Add 3–4: front, side, cushions lifted, and any wear.<br>
+          Any size — we resize and compress automatically.</div>
+      </div>
+      <input type="file" id="file" accept="image/*" multiple style="display:none"
+        onchange="handleFiles(this.files)">
+      <div class="prev-wrap" id="prevWrap">
+        <div class="pending-grid" id="pendingGrid"></div>
+        <div class="prev-meta" id="prevMeta"></div>
+      </div>
+    </div>
+
+    <details class="importer" id="importer">
+      <summary><span class="imp-ic">📋</span> Import from a Marketplace listing
+        <span class="opt">— paste and it fills the form</span></summary>
+      <div class="imp-body">
+        <p class="imp-help">Open your listing on Facebook Marketplace, select the
+          <b>title, price and description</b>, copy, and paste below. Photos still need
+          adding above — Marketplace won't let anything copy them automatically.</p>
+        <textarea id="impText" class="imp-ta" rows="6"
+          placeholder="Blue Structube Sectional Sofa&#10;$675&#10;Toronto, ON&#10;&#10;Navy blue sectional, 265x200 cm. Like new condition, barely used.&#10;Right-facing chaise with solid wood legs."></textarea>
+        <div class="imp-row">
+          <button class="btn-g" onclick="parseListing()">Fill the form from this →</button>
+          <button class="btn-ghost" onclick="document.getElementById('impText').value='';document.getElementById('impOut').innerHTML=''">Clear</button>
+        </div>
+        <div class="imp-out" id="impOut"></div>
+      </div>
+    </details>
+
+    <div class="row">
+      <div class="field"><label>Name</label>
+        <input id="f_name" placeholder="Blue Structube Sectional"></div>
+      <div class="field"><label>Brand</label>
+        <input id="f_brand" placeholder="Structube" list="brands">
+        <datalist id="brands">
+          <option>IKEA</option><option>IKEA Friheten</option><option>Structube</option>
+          <option>Urban Barn</option><option>Article</option><option>Wayfair</option>
+          <option>Sofa Cycle Select</option>
+        </datalist></div>
+    </div>
+
+    <div class="row-3">
+      <div class="field"><label>Type</label>
+        <select id="f_type">
+          <option value="sectional">Sectional</option>
+          <option value="sofa-bed">Sofa Bed</option>
+          <option value="3-seater">3-Seater</option>
+          <option value="2-seater">2-Seater</option>
+          <option value="loveseat">Loveseat</option>
+        </select></div>
+      <div class="field"><label>Colour</label><input id="f_colour" placeholder="Navy Blue"></div>
+      <div class="field"><label>Condition</label>
+        <select id="f_cond"><option>Like New</option><option>Good</option><option>Fair</option></select></div>
+    </div>
+
+    <div class="margin-box">
+      <div class="margin-t">💰 Margin check <span class="opt">— optional, never shown on the site</span></div>
+      <div class="row-3">
+        <div class="field"><label>You paid $</label>
+          <input id="m_cost" type="number" inputmode="numeric" placeholder="150" oninput="calcMargin()"></div>
+        <div class="field"><label>Cleaning + fuel $</label>
+          <input id="m_costs" type="number" inputmode="numeric" placeholder="40" oninput="calcMargin()"></div>
+        <div class="field"><label>Target profit $</label>
+          <input id="m_target" type="number" inputmode="numeric" value="400" oninput="calcMargin()"></div>
+      </div>
+      <div class="margin-out" id="marginOut">Enter your costs to see the price you need.</div>
+    </div>
+
+    <div class="row-3">
+      <div class="field"><label>Price $</label>
+        <input id="f_price" type="number" inputmode="numeric" placeholder="675" oninput="calcMargin()"></div>
+      <div class="field"><label>Was $ <span class="opt">(if reduced)</span></label>
+        <input id="f_was" type="number" inputmode="numeric" placeholder="—"></div>
+      <div class="field"><label>Comparable new $ <span class="opt">(optional)</span></label>
+        <input id="f_rrp" type="number" inputmode="numeric" placeholder="—" oninput="rrpWarn()">
+        <div class="warn" id="rrpW">⚠️ Only fill this if you can point to a real listing at that
+          price. Canada's Competition Act requires comparison prices be substantiable.</div></div>
+    </div>
+
+    <div class="row">
+      <div class="field"><label>Dimensions</label>
+        <input id="f_dims" placeholder="265×200 cm">
+        <div class="hint">Width × depth. Measure it — don't guess.</div></div>
+      <div class="field"><label>Doorway clearance needed (inches)</label>
+        <input id="f_fit" type="number" inputmode="numeric" placeholder="30">
+        <div class="hint">Narrowest width it can pass through. Prevents failed deliveries.</div></div>
+    </div>
+
+    <div class="field"><label>Description</label>
+      <textarea id="f_note" placeholder="Right-facing corner chaise, solid wood legs. Deep seats, excellent condition."></textarea>
+      <div class="hint">One honest line. Mention flaws — it builds trust and saves wasted trips.</div></div>
+
+    <div class="field">
+      <label class="check"><input type="checkbox" id="f_hot">
+        <span><b style="color:var(--gold)">Mark as 🔥 Hot</b> — adds a badge. Use sparingly or it stops meaning anything.</span></label>
+    </div>
+
+    <button class="b-gold" style="width:100%" onclick="addSofa()">Add to inventory</button>
+  </div>
+
+  <!-- CURRENT -->
+  <div class="sec-h">
+    <h2>Current inventory</h2>
+    <div class="count" id="count"></div>
+  </div>
+  <div class="list" id="list"></div>
+
+</div>
+
+<!-- EDIT MODAL -->
+<div class="ov" id="editOv" onclick="if(event.target===this)closeEdit()">
+  <div class="modal" id="editBody"></div>
+</div>
+
+<div class="exportbar">
+  <div class="eb-l" id="ebStatus">No changes yet</div>
+  <div class="eb-r">
+    <button class="b-out" onclick="resetAll()">Reset</button>
+    <button class="b-out" onclick="exportAll()">⬇ Download</button>
+    <button class="b-gold" onclick="publishLive()">🚀 Publish to live site</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   Passcode. Change PASSCODE below to whatever you want.
+   Read the note on the login screen about what this does and doesn't do.
+   ══════════════════════════════════════════════════════════════════ */
+const PASSCODE = "sofacycle2025";
+
+function unlock(){
+  const v = document.getElementById('pw').value;
+  if (v === PASSCODE){
+    document.getElementById('gate').style.display = 'none';
+    sessionStorage.setItem('sc_ok','1');
+  } else {
+    toast('Wrong passcode', true);
+    document.getElementById('pw').value = '';
+  }
+}
+if (sessionStorage.getItem('sc_ok')) document.getElementById('gate').style.display = 'none';
+
+/* ══ STATE ══ */
+let inv = [];            // working copy
+let original = "";       // JSON snapshot to detect changes
+let newImages = {};      // filename -> Blob (only newly uploaded)
+let pending = [];        // staged images for the add form
+
+const $ = id => document.getElementById(id);
+const money = n => "$" + Number(n).toLocaleString('en-CA');
+
+function toast(msg, err){
+  const t = $('toast');
+  t.textContent = msg;
+  t.style.background = err ? '#C0424C' : '#4FC98A';
+  t.style.color = err ? '#fff' : '#04241a';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+/* ══ LOAD EXISTING INVENTORY ══ */
+async function loadInventory(){
+  try{
+    const res = await fetch('js/inventory.js');
+    const txt = await res.text();
+    const fn = new Function(txt + '; return INVENTORY;');
+    inv = fn();
+    original = JSON.stringify(inv);
+    render();
+  }catch(e){
+    console.warn(e);
+    inv = [];
+    render();
+    toast('Could not read current inventory — starting empty', true);
+  }
+}
+
+/* ══ IMAGE HANDLING ══ */
+function slug(s){
+  return 'sofa-' + s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+}
+
+async function compress(file, name){
+  const bitmap = await createImageBitmap(file);
+  const MAXW = 620;
+  const w = Math.min(bitmap.width, MAXW);
+  const h = Math.round(bitmap.height * (w / bitmap.width));
+  const cv = document.createElement('canvas');
+  cv.width = w; cv.height = h;
+  cv.getContext('2d').drawImage(bitmap, 0, 0, w, h);
+  const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', 0.78));
+  return { blob, w, h, url: cv.toDataURL('image/jpeg', 0.78) };
+}
+
+async function handleFiles(files){
+  for (const file of [...files]) {
+    if (!file || !file.type.startsWith('image/')) continue;
+    if (pending.length >= 6) { toast('6 photos is plenty'); break; }
+    try {
+      const out = await compress(file);
+      out.originalSize = file.size;
+      pending.push(out);
+    } catch(e) { toast("Couldn't read one of those images", true); }
+  }
+  drawPending();
+}
+
+function drawPending(){
+  const g = $('pendingGrid');
+  if (!pending.length) { $('prevWrap').classList.remove('show'); g.innerHTML=''; return; }
+  g.innerHTML = pending.map((p,i)=>`
+    <div class="pend">
+      <img src="${p.url}" alt="">
+      <button class="pend-x" onclick="rmPending(${i})">✕</button>
+      ${i===0?'<span class="pend-main">MAIN</span>':''}
+    </div>`).join('');
+  const total = pending.reduce((s,p)=>s+p.blob.size,0);
+  const before = pending.reduce((s,p)=>s+(p.originalSize||0),0);
+  $('prevMeta').innerHTML = `${pending.length} photo${pending.length>1?'s':''} ·
+    <b>${(total/1024).toFixed(0)} KB total</b>
+    <span style="color:var(--dim)">(was ${(before/1024/1024).toFixed(1)} MB — ${Math.round((1-total/before)*100)}% smaller)</span><br>
+    <span style="color:var(--dim)">First photo is the one buyers see on the listing card.</span>`;
+  $('prevWrap').classList.add('show');
+}
+function rmPending(i){ pending.splice(i,1); drawPending(); }
+
+/* ── Margin calculator ── */
+function calcMargin(){
+  const cost = +($('m_cost').value||0), extra = +($('m_costs').value||0),
+        target = +($('m_target').value||0), price = +($('f_price').value||0);
+  const out = $('marginOut');
+  const totalCost = cost + extra;
+  if (!totalCost) { out.innerHTML = 'Enter your costs to see the price you need.'; out.className='margin-out'; return; }
+  const needed = totalCost + target;
+  if (!price) {
+    out.innerHTML = `To clear <b>${money(target)}</b> profit you'd list at <b>${money(needed)}</b>.`;
+    out.className='margin-out'; return;
+  }
+  const profit = price - totalCost;
+  const pct = Math.round(profit/price*100);
+  const good = profit >= target;
+  out.innerHTML = `At <b>${money(price)}</b> you'd clear <b>${money(profit)}</b> (${pct}% margin).
+    ${good ? `✅ Hits your ${money(target)} target.`
+           : `⚠️ ${money(target-profit)} short — you'd need <b>${money(needed)}</b> to hit it.`}`;
+  out.className = 'margin-out ' + (good ? 'mg-ok' : 'mg-warn');
+}
+
+(function(){
+  const d = $('drop');
+  ['dragenter','dragover'].forEach(ev => d.addEventListener(ev, e => {e.preventDefault(); d.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev => d.addEventListener(ev, e => {e.preventDefault(); d.classList.remove('over');}));
+  d.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
+})();
+
+function rrpWarn(){
+  $('rrpW').classList.toggle('show', !!$('f_rrp').value);
+}
+
+/* ══ ADD ══ */
+function addSofa(){
+  const name = $('f_name').value.trim();
+  const price = parseInt($('f_price').value, 10);
+  if (!name){ toast('Give it a name', true); return; }
+  if (!price){ toast('Set a price', true); return; }
+  if (!pending.length){ toast('Add at least one photo', true); return; }
+
+  const base = slug(name);
+  const filenames = pending.map((p,i)=>{
+    const fn = i === 0 ? `${base}.jpg` : `${base}-${i+1}.jpg`;
+    newImages[fn] = p.blob;
+    return fn;
+  });
+  const filename = filenames[0];
+
+  const s = {
+    id: inv.length ? Math.max(...inv.map(x=>x.id)) + 1 : 1,
+    name,
+    brand: $('f_brand').value.trim() || 'Sofa Cycle Select',
+    type: $('f_type').value,
+    colour: $('f_colour').value.trim() || '—',
+    dims: $('f_dims').value.trim() || '—',
+    condition: $('f_cond').value,
+    price,
+    listed: new Date().toISOString().slice(0,10),
+    status: 'available',
+    img: filename,
+    photos: filenames,
+    note: $('f_note').value.trim() || ''
+  };
+  const was = parseInt($('f_was').value,10); if (was) s.was = was;
+  const rrp = parseInt($('f_rrp').value,10); if (rrp) s.rrp = rrp;
+  const fit = parseInt($('f_fit').value,10); if (fit) s.fit = fit;
+  if ($('f_hot').checked) s.hot = true;
+
+  inv.unshift(s);
+  clearForm();
+  render();
+  toast(`${name} added`);
+  window.scrollTo({top: document.querySelector('.sec-h').offsetTop - 80, behavior:'smooth'});
+}
+
+function clearForm(){
+  ['f_name','f_brand','f_colour','f_dims','f_price','f_was','f_rrp','f_fit','f_note']
+    .forEach(id => $(id).value = '');
+  $('f_hot').checked = false;
+  $('prevWrap').classList.remove('show');
+  $('rrpW').classList.remove('show');
+  ['m_cost','m_costs'].forEach(id=>$(id).value='');
+  calcMargin();
+  pending = [];
+  $('pendingGrid').innerHTML = '';
+  $('file').value = '';
+}
+
+/* ══ RENDER ══ */
+function imgSrc(s){
+  if (newImages[s.img]) return URL.createObjectURL(newImages[s.img]);
+  return 'assets/' + s.img;
+}
+
+function render(){
+  const avail = inv.filter(s=>s.status==='available').length;
+  const held  = inv.filter(s=>s.status==='hold').length;
+  $('count').textContent = `${inv.length} total · ${avail} available`;
+  $('list').innerHTML = inv.map((s,i)=>`
+    <div class="item ${s.status==='sold'?'sold':''} ${s.status==='hold'?'held':''} ${!s.img?'nophoto':''}">
+      ${s.img ? `<img src="${imgSrc(s)}" alt="" onerror="this.outerHTML='<div class=\\'ph\\'>🛋️</div>'">`
+              : `<div class="ph">🛋️</div>`}
+      <div>
+        <div class="it-n">${s.name}<span class="pill p-${s.status}">${s.status}</span>${!s.img?'<span class="pill p-nophoto">needs photo</span>':''}</div>
+        <div class="it-m">${s.brand} · ${s.colour} · ${s.dims}</div>
+        <div class="it-p">${s.was?`<s>${money(s.was)}</s>`:''}${money(s.price)}</div>
+      </div>
+      <div class="it-acts">
+        <button class="b-out b-sm" onclick="openEdit(${i})">Edit</button>
+        <button class="b-out b-sm" onclick="cycleStatus(${i})">${
+          s.status==='available'?'Put on hold':s.status==='hold'?'Mark reserved':s.status==='reserved'?'Mark sold':'Mark available'}</button>
+        <button class="b-red b-sm" onclick="removeSofa(${i})">Delete</button>
+      </div>
+    </div>`).join('') ||
+    `<div class="panel" style="text-align:center;color:var(--muted)">
+      <div style="font-size:2.4rem;margin-bottom:8px">🛋️</div>Nothing in inventory yet.</div>`;
+  updateBar();
+}
+
+function updateBar(){
+  const changed = JSON.stringify(inv) !== original;
+  const n = Object.keys(newImages).length;
+  const noPhoto = inv.filter(s => !s.img && s.status !== 'sold').length;
+  const warn = noPhoto ? ` · <span style="color:#8FD0FF">${noPhoto} still need${noPhoto>1?'':'s'} a photo</span>` : '';
+  $('ebStatus').innerHTML = changed
+    ? `<span class="dirty">Unsaved changes</span> · <b>${inv.length}</b> sofas${n?` · ${n} new photo${n>1?'s':''}`:''}${warn}`
+    : (noPhoto ? `<b>${inv.length}</b> sofas${warn}` : 'No changes yet');
+}
+
+
+/* ══ MARKETPLACE IMPORT ══
+   Facebook Marketplace has no public API and blocks automated reading, so
+   nothing can pull listings directly. This parses text you paste instead —
+   which takes about 5 seconds and gets you most of the way there.
+
+   One engine (parseBlock) powers both the single importer and the bulk
+   importer below, so they stay in sync. */
+
+const TYPE_LABEL = {'sofa-bed':'Sofa Bed','sectional':'Sectional','loveseat':'Loveseat',
+                    '3-seater':'3-Seater','2-seater':'2-Seater'};
+
+function parseBlock(raw){
+  raw = (raw || '').trim();
+  const lines = raw.split(/\n+/).map(l=>l.trim()).filter(Boolean);
+  const text  = raw.replace(/\s+/g,' ');
+  const low   = text.toLowerCase();
+  const f = {};              // parsed fields
+  const found = [];          // field keys we filled
+
+  /* ── Price: first $ amount, or a bare 3–5 digit number on its own line ── */
+  let price = null;
+  const pm = raw.match(/\$\s?([\d,]+)/);
+  if (pm) price = parseInt(pm[1].replace(/,/g,''),10);
+  else {
+    const bare = lines.find(l => /^\$?\s?\d{2,5}$/.test(l));
+    if (bare) price = parseInt(bare.replace(/[^\d]/g,''),10);
+  }
+  if (price && price > 0 && price < 20000){ f.price = price; found.push('price'); }
+
+  /* ── Dimensions: 265x200 cm, 104"x79", inches converted to cm ── */
+  let dims = null;
+  const cm = text.match(/(\d{2,3})\s*(?:x|×|by)\s*(\d{2,3})\s*(?:cm|centimet)/i);
+  const inch = text.match(/(\d{2,3})\s*(?:"|''|in\b|inch)\s*(?:x|×|by)\s*(\d{2,3})\s*(?:"|''|in\b|inch)?/i);
+  const plain = text.match(/(\d{2,3})\s*(?:x|×)\s*(\d{2,3})(?!\d)/);
+  if (cm)        dims = `${cm[1]}×${cm[2]} cm`;
+  else if (inch) dims = `${Math.round(inch[1]*2.54)}×${Math.round(inch[2]*2.54)} cm`;
+  else if (plain && +plain[1] > 100) dims = `${plain[1]}×${plain[2]} cm`;
+  if (dims){ f.dims = dims; found.push('dims'); }
+
+  /* ── Type ── */
+  const types = [
+    [/sofa\s?bed|sleeper|pull[- ]?out|futon|click[- ]?clack/,'sofa-bed'],
+    [/sectional|corner|chaise|l[- ]shape/,'sectional'],
+    [/love\s?seat/,'loveseat'],
+    [/\b3[- ]?seat|three[- ]?seat|\bsofa\b|couch/,'3-seater'],
+    [/\b2[- ]?seat|two[- ]?seat/,'2-seater']
+  ];
+  for (const [re,val] of types){
+    if (re.test(low)){ f.type = val; found.push('type'); break; }
+  }
+
+  /* ── Condition: explicit "<x> condition" beats incidental wear words ── */
+  if (/(like new|excellent|mint)\s*condition|\blike new\b|barely used|hardly used/.test(low)){
+    f.condition = 'Like New'; found.push('condition');
+  } else if (/good condition|gently used|\bgood shape\b/.test(low)){
+    f.condition = 'Good'; found.push('condition');
+  } else if (/fair condition|\bfair\b|heavily worn|stain|tear\b|rip\b|damaged/.test(low)){
+    f.condition = 'Fair'; found.push('condition');
+  } else if (/some wear|light wear|used/.test(low)){
+    f.condition = 'Good'; found.push('condition');
+  }
+
+  /* ── Brand ── */
+  const brands = ['IKEA Friheten','IKEA','Structube','Urban Barn','Article','Wayfair','EQ3','Leon','The Brick'];
+  for (const b of brands){
+    if (low.includes(b.toLowerCase())){ f.brand = b; found.push('brand'); break; }
+  }
+
+  /* ── Colour ── */
+  const colours = ['Navy Blue','Charcoal','Light Grey','Dark Grey','Grey','Gray','Beige','Cream',
+                   'Black','White','Brown','Tan','Green','Blue','Taupe','Mocha'];
+  for (const c of colours){
+    if (low.includes(c.toLowerCase())){
+      f.colour = c === 'Gray' ? 'Grey' : c; found.push('colour'); break;
+    }
+  }
+
+  /* ── Name: first line, cleaned of price and location noise ── */
+  let name = lines[0] || '';
+  name = name
+    .replace(/\$\s?[\d,]+/g,'')
+    .replace(/\b(obo|or best offer|firm|negotiable|pickup|delivery available)\b.*$/i,'')
+    .replace(/[-–—|·,]\s*(toronto|ontario|on|gta|scarborough|north york|etobicoke).*$/i,'')
+    .replace(/[\s\-–—|·]+$/,'')
+    .trim();
+  if (name.length > 2 && name.length < 70 && !/^\$?\d+$/.test(name)){
+    f.name = name; found.push('name');
+  }
+
+  /* ── Description: the longest line that isn't the title ── */
+  const body = lines.slice(1)
+    .filter(l => l.length > 25 && !/^\$/.test(l) && !/^(toronto|ontario|listed|posted)/i.test(l))
+    .sort((a,b)=>b.length-a.length)[0];
+  if (body){ f.note = body; found.push('note'); }
+
+  /* A name on its own isn't a listing — junk like "is this still available"
+     would otherwise report success. Require a price or ≥2 fields. */
+  const real = found.length >= 2 || !!f.price;
+  return { fields: f, found, real };
+}
+
+/* Human label for a parsed field key, used in the green chips */
+function labelFor(k, f){
+  switch(k){
+    case 'price':     return `Price $${f.price}`;
+    case 'dims':      return `Dimensions ${f.dims}`;
+    case 'type':      return `Type: ${TYPE_LABEL[f.type] || f.type}`;
+    case 'condition': return `Condition: ${f.condition}`;
+    case 'brand':     return `Brand: ${f.brand}`;
+    case 'colour':    return `Colour: ${f.colour}`;
+    case 'name':      return `Name: ${f.name}`;
+    case 'note':      return 'Description';
+    default:          return k;
+  }
+}
+
+/* ── Single-listing importer (fills the form above) ── */
+function parseListing(){
+  const raw = ($('impText').value || '').trim();
+  if (!raw){ toast('Paste a listing first', true); return; }
+
+  const { fields:f, found, real } = parseBlock(raw);
+
+  if (!real){
+    $('impOut').innerHTML = `<div class="imp-no">Couldn't read that. Make sure you copied the
+      title, price and description — or just fill the form in directly, it's only a few fields.</div>`;
+    return;
+  }
+
+  if (f.price != null) $('f_price').value  = f.price;
+  if (f.dims)          $('f_dims').value   = f.dims;
+  if (f.type)          $('f_type').value   = f.type;
+  if (f.condition)     $('f_cond').value   = f.condition;
+  if (f.brand)         $('f_brand').value  = f.brand;
+  if (f.colour)        $('f_colour').value = f.colour;
+  if (f.name)          $('f_name').value   = f.name;
+  if (f.note)          $('f_note').value   = f.note;
+
+  const missing = [];
+  if (!f.price) missing.push('price');
+  if (!f.dims)  missing.push('dimensions');
+  if (!f.name)  missing.push('name');
+
+  $('impOut').innerHTML = `<div class="imp-ok"><b>✅ Filled ${found.length} field${found.length>1?'s':''}</b>
+      <div class="imp-list">${found.map(k=>`<span>${labelFor(k,f)}</span>`).join('')}</div>
+      ${missing.length ? `<div class="imp-miss">⚠️ Couldn't find: <b>${missing.join(', ')}</b> — add manually below.</div>` : ''}
+      <div class="imp-miss">📷 Photos still need adding above.</div></div>`;
+
+  calcMargin();
+  toast(`Filled ${found.length} fields`);
+  $('f_name').scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ══ BULK ADD — a section per sofa ══
+   Photo-first: each section has its own photo dropzone and a name at the top.
+   Add as many sections as you're listing, then commit them all at once with
+   their photos. Text fields write straight to state on input, so re-rendering
+   (on add/remove section or photo) never loses what you've typed. */
+
+let bulkSections = [];   // [{name, price, type, condition, colour, dims, note, photos:[{blob,url,originalSize}]}]
+
+function newSection(){
+  return { name:'', price:'', type:'sectional', condition:'Like New',
+           colour:'', dims:'', note:'', photos:[] };
+}
+
+function addBulkSection(){
+  bulkSections.push(newSection());
+  renderBulkSections();
+  /* focus the name field of the section just added */
+  const last = document.querySelector('#bulkSections .bs-sec:last-child .bs-name');
+  if (last) last.focus();
+}
+
+function clearBulkSections(){
+  if (bulkSections.some(s=>s.name||s.price||s.photos.length) &&
+      !confirm('Clear all bulk sections? Anything unsaved here is lost.')) return;
+  bulkSections = [];
+  renderBulkSections();
+}
+
+function removeBulkSection(i){
+  bulkSections.splice(i,1);
+  renderBulkSections();
+}
+
+function bulkField(i, key, val){
+  if (!bulkSections[i]) return;
+  bulkSections[i][key] = val;
+  updateBulkCommit();
+}
+
+async function bulkPhotoAdd(i, files){
+  const sec = bulkSections[i];
+  if (!sec) return;
+  for (const file of [...files]){
+    if (!file || !file.type.startsWith('image/')) continue;
+    if (sec.photos.length >= 6){ toast('6 photos is plenty'); break; }
+    try {
+      const out = await compress(file);
+      out.originalSize = file.size;
+      sec.photos.push(out);
+    } catch(e){ toast("Couldn't read one of those images", true); }
+  }
+  drawBulkPhotos(i);
+  updateBulkCommit();
+}
+
+function bulkPhotoRemove(i, j){
+  bulkSections[i].photos.splice(j,1);
+  drawBulkPhotos(i);
+  updateBulkCommit();
+}
+
+/* Redraw just one section's photo grid, so text focus elsewhere is preserved */
+function drawBulkPhotos(i){
+  const g = document.getElementById(`bphotos-${i}`);
+  if (!g) return;
+  const ph = bulkSections[i].photos;
+  g.innerHTML = ph.map((p,j)=>`
+    <div class="pend">
+      <img src="${p.url}" alt="">
+      <button class="pend-x" onclick="bulkPhotoRemove(${i},${j})">✕</button>
+      ${j===0?'<span class="pend-main">MAIN</span>':''}
+    </div>`).join('');
+}
+
+function renderBulkSections(){
+  const host = $('bulkSections');
+  if (!bulkSections.length){
+    host.innerHTML = `<div class="bs-empty">No sofas yet. Tap <b>+ Add another sofa</b> to start a section.</div>`;
+    updateBulkCommit();
+    return;
+  }
+  host.innerHTML = bulkSections.map((s,i)=>`
+    <div class="bs-sec">
+      <div class="bs-top">
+        <span class="bs-num">${i+1}</span>
+        <input class="bs-name" value="${(s.name||'').replace(/"/g,'&quot;')}"
+          placeholder="Name this sofa — e.g. Blue Structube Sectional"
+          oninput="bulkField(${i},'name',this.value)">
+        <button class="bd-x" onclick="removeBulkSection(${i})" title="Remove this sofa">✕</button>
+      </div>
+
+      <div class="bs-drop" onclick="document.getElementById('bfile-${i}').click()"
+           ondragover="event.preventDefault();this.classList.add('over')"
+           ondragleave="this.classList.remove('over')"
+           ondrop="event.preventDefault();this.classList.remove('over');bulkPhotoAdd(${i},event.dataTransfer.files)">
+        <span class="bs-drop-ic">📷</span>
+        <span class="bs-drop-t">Drop photos here, or tap to choose</span>
+      </div>
+      <input type="file" id="bfile-${i}" accept="image/*" multiple style="display:none"
+        onchange="bulkPhotoAdd(${i}, this.files)">
+      <div class="pending-grid" id="bphotos-${i}"></div>
+
+      <div class="bs-fields">
+        <div class="bs-f bs-price-wrap"><span class="bd-dollar">$</span>
+          <input class="bs-price" type="number" inputmode="numeric" value="${s.price||''}"
+            placeholder="Price" oninput="bulkField(${i},'price',this.value)"></div>
+        <select class="bs-sel" onchange="bulkField(${i},'type',this.value)">
+          ${Object.entries(TYPE_LABEL).map(([v,l])=>`<option value="${v}" ${s.type===v?'selected':''}>${l}</option>`).join('')}
+        </select>
+        <select class="bs-sel" onchange="bulkField(${i},'condition',this.value)">
+          ${['Like New','Good','Fair'].map(c=>`<option ${s.condition===c?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </div>
+      <div class="bs-fields">
+        <input class="bs-in" value="${(s.colour||'').replace(/"/g,'&quot;')}"
+          placeholder="Colour (optional)" oninput="bulkField(${i},'colour',this.value)">
+        <input class="bs-in" value="${(s.dims||'').replace(/"/g,'&quot;')}"
+          placeholder="Dimensions e.g. 265×200 cm" oninput="bulkField(${i},'dims',this.value)">
+      </div>
+      <input class="bs-in bs-note" value="${(s.note||'').replace(/"/g,'&quot;')}"
+        placeholder="One honest line — mention any flaws (optional)" oninput="bulkField(${i},'note',this.value)">
+    </div>`).join('');
+
+  bulkSections.forEach((_,i)=>drawBulkPhotos(i));
+  updateBulkCommit();
+}
+
+function updateBulkCommit(){
+  const box = $('bsCommit');
+  if (!bulkSections.length){ box.innerHTML=''; return; }
+  const ready = bulkSections.filter(s=>s.name.trim() && parseInt(s.price,10) && s.photos.length);
+  const incomplete = bulkSections.length - ready.length;
+  box.innerHTML = `
+    <div class="bs-status">
+      <b>${ready.length}</b> of ${bulkSections.length} ready
+      ${incomplete?`<span class="bs-inc">· ${incomplete} still ${incomplete>1?'need':'needs'} a name, price and photo</span>`:'✅'}
+    </div>
+    <button class="b-gold" ${ready.length?'':'disabled'} onclick="commitBulkSections()">
+      Add ${ready.length||''} ${ready.length===1?'sofa':'sofas'} to inventory →</button>`;
+}
+
+function commitBulkSections(){
+  const ready = bulkSections.filter(s=>s.name.trim() && parseInt(s.price,10) && s.photos.length);
+  if (!ready.length){ toast('Each needs a name, price and at least one photo', true); return; }
+
+  let nextId = inv.length ? Math.max(...inv.map(x=>x.id)) : 0;
+  const today = new Date().toISOString().slice(0,10);
+
+  ready.forEach(s=>{
+    const base = slug(s.name);
+    const filenames = s.photos.map((p,k)=>{
+      const fn = k===0 ? `${base}.jpg` : `${base}-${k+1}.jpg`;
+      newImages[fn] = p.blob;
+      return fn;
+    });
+    inv.unshift({
+      id: ++nextId,
+      name: s.name.trim(),
+      brand: 'Sofa Cycle Select',
+      type: s.type || 'sectional',
+      colour: s.colour.trim() || '—',
+      dims: s.dims.trim() || '—',
+      condition: s.condition || 'Like New',
+      price: parseInt(s.price,10),
+      listed: today,
+      status: 'available',
+      img: filenames[0],
+      photos: filenames,
+      note: s.note.trim() || ''
+    });
+  });
+
+  const n = ready.length;
+  const leftover = bulkSections.filter(s=>!(s.name.trim() && parseInt(s.price,10) && s.photos.length));
+  bulkSections = leftover;          // keep any unfinished sections
+  renderBulkSections();
+  render();
+  toast(`${n} sofa${n>1?'s':''} added${leftover.length?` · ${leftover.length} unfinished kept`:''}`);
+  window.scrollTo({top: document.querySelector('.sec-h').offsetTop - 80, behavior:'smooth'});
+}
+
+/* ══ ACTIONS ══ */
+function cycleStatus(i){
+  const order = ['available','hold','reserved','sold'];
+  const cur = order.indexOf(inv[i].status);
+  inv[i].status = order[(cur < 0 ? 0 : cur + 1) % 4];
+  render();
+  toast(`${inv[i].name} → ${inv[i].status}`);
+}
+
+function removeSofa(i){
+  if (!confirm(`Remove "${inv[i].name}" from the site?`)) return;
+  const n = inv[i].name;
+  delete newImages[inv[i].img];
+  inv.splice(i,1);
+  render();
+  toast(`${n} removed`);
+}
+
+function openEdit(i){
+  const s = inv[i];
+  $('editBody').innerHTML = `
+    <h2>Edit sofa</h2><div class="sub">${s.name}</div>
+    <div class="row">
+      <div class="field"><label>Name</label><input id="e_name" value="${s.name}"></div>
+      <div class="field"><label>Brand</label><input id="e_brand" value="${s.brand}"></div></div>
+    <div class="row-3">
+      <div class="field"><label>Price $</label><input id="e_price" type="number" value="${s.price}"></div>
+      <div class="field"><label>Was $</label><input id="e_was" type="number" value="${s.was||''}"></div>
+      <div class="field"><label>Comparable new $</label><input id="e_rrp" type="number" value="${s.rrp||''}"></div></div>
+    <div class="row-3">
+      <div class="field"><label>Colour</label><input id="e_colour" value="${s.colour}"></div>
+      <div class="field"><label>Dimensions</label><input id="e_dims" value="${s.dims}"></div>
+      <div class="field"><label>Fit (inches)</label><input id="e_fit" type="number" value="${s.fit||''}"></div></div>
+    <div class="row">
+      <div class="field"><label>Condition</label><select id="e_cond">
+        ${['Like New','Good','Fair'].map(c=>`<option ${s.condition===c?'selected':''}>${c}</option>`).join('')}
+      </select></div>
+      <div class="field"><label>Status</label><select id="e_status">
+        ${['available','hold','reserved','sold'].map(c=>`<option ${s.status===c?'selected':''}>${c}</option>`).join('')}
+      </select></div></div>
+    <div class="field"><label>Description</label><textarea id="e_note">${s.note||''}</textarea></div>
+    <div class="field"><label class="check"><input type="checkbox" id="e_hot" ${s.hot?'checked':''}>
+      <span>Mark as 🔥 Hot</span></label></div>
+    <div class="field"><label>Replace photo <span class="opt">(optional)</span></label>
+      <input type="file" accept="image/*" onchange="replacePhoto(${i}, this.files[0])"></div>
+    <div class="mfoot">
+      <button class="b-out" onclick="closeEdit()">Cancel</button>
+      <button class="b-gold" onclick="saveEdit(${i})">Save</button></div>`;
+  $('editOv').classList.add('open');
+}
+function closeEdit(){ $('editOv').classList.remove('open'); }
+
+async function replacePhoto(i, file){
+  if (!file) return;
+  const out = await compress(file);
+  const fname = slug(inv[i].name) + '.jpg';
+  newImages[fname] = out.blob;
+  inv[i].img = fname;
+  toast('Photo replaced — save to apply');
+}
+
+function saveEdit(i){
+  const s = inv[i];
+  s.name = $('e_name').value.trim() || s.name;
+  s.brand = $('e_brand').value.trim();
+  s.price = parseInt($('e_price').value,10) || s.price;
+  s.colour = $('e_colour').value.trim();
+  s.dims = $('e_dims').value.trim();
+  s.condition = $('e_cond').value;
+  s.status = $('e_status').value;
+  s.note = $('e_note').value.trim();
+  const was = parseInt($('e_was').value,10); was ? s.was = was : delete s.was;
+  const rrp = parseInt($('e_rrp').value,10); rrp ? s.rrp = rrp : delete s.rrp;
+  const fit = parseInt($('e_fit').value,10); fit ? s.fit = fit : delete s.fit;
+  $('e_hot').checked ? s.hot = true : delete s.hot;
+  closeEdit(); render();
+  toast('Saved');
+}
+
+function resetAll(){
+  if (!confirm('Discard all changes since you opened this page?')) return;
+  newImages = {};
+  loadInventory();
+  toast('Reset');
+}
+
+/* ══ EXPORT ══ */
+function buildInventoryJS(){
+  const body = inv.map(s => {
+    const L = [];
+    L.push(`    id: ${s.id}, name: ${JSON.stringify(s.name)}, brand: ${JSON.stringify(s.brand)},`);
+    L.push(`    type: ${JSON.stringify(s.type)}, colour: ${JSON.stringify(s.colour)}, dims: ${JSON.stringify(s.dims)},`);
+    let line3 = `    condition: ${JSON.stringify(s.condition)}, price: ${s.price}`;
+    if (s.was) line3 += `, was: ${s.was}`;
+    if (s.rrp) line3 += `, rrp: ${s.rrp}`;
+    if (s.fit) line3 += `, fit: ${s.fit}`;
+    L.push(line3 + ',');
+    L.push(`    status: ${JSON.stringify(s.status)}, img: ${JSON.stringify(s.img)},`);
+    if (s.photos && s.photos.length) L.push(`    photos: ${JSON.stringify(s.photos)},`);
+    if (s.listed) L.push(`    listed: ${JSON.stringify(s.listed)},`);
+    L.push(`    note: ${JSON.stringify(s.note || '')}${s.hot ? ',' : ''}`);
+    if (s.hot) L.push(`    hot: true`);
+    return '  {\n' + L.join('\n') + '\n  }';
+  }).join(',\n');
+
+  return `/* ══════════════════════════════════════════════════════════════════════
+   INVENTORY — generated by admin.html on ${new Date().toLocaleString('en-CA')}
+
+   You can edit this by hand, but it's easier to use admin.html.
+   ══════════════════════════════════════════════════════════════════════ */
+
+const INVENTORY = [
+${body}
+];
+
+/* Defense Sheets bundle pricing */
+const SHEET_TIERS = [
+  { qty: 1, price: 28, label: "1 Pack (12 sheets)" },
+  { qty: 2, price: 49, label: "2 Packs (24 sheets)" },
+  { qty: 3, price: 69, label: "3 Packs (36 sheets)" }
+];
+
+/* Cleaning service pricing */
+const CLEANING = {
+  tiers: [
+    { name: "Loveseat / 2-Seater", price: 299, note: "Up to 2 cushions" },
+    { name: "3-Seater Sofa",       price: 349, note: "Up to 3 cushions" },
+    { name: "Sectional",           price: 429, note: "L-shape or larger" }
+  ],
+  addons: [
+    { label: "🐾 Pet odour & hair treatment", price: 79 },
+    { label: "🛡️ Fabric protection coating",  price: 69 },
+    { label: "💧 Deep stain treatment",       price: 59 },
+    { label: "🪑 Add an armchair",            price: 49 },
+    { label: "🧴 Leather condition & polish", price: 39 }
+  ]
+};
+
+if (typeof module !== "undefined") module.exports = { INVENTORY, SHEET_TIERS, CLEANING };
+`;
+}
+
+/* ══ EXPORT — COMPLETE SITE, ONE ZIP ══
+   The old "update" zip held only inventory.js + images, which meant merging it
+   into a full folder and dragging the whole folder to Netlify — impossible on a
+   phone, and it wiped the homepage when the partial folder got uploaded alone.
+
+   This bundles the ENTIRE site into one zip: every page, plus your fresh
+   inventory and new photos. Upload that single file to Netlify and the whole
+   site redeploys. It can't break the homepage, because the homepage is in it.
+
+   It works by fetching the live site's own files — so run this from your live
+   admin (sofacyclecanada.ca/admin.html), not a local file. */
+
+const SITE_FILES = [
+  '404.html','index.html','process.html','cleaning.html','donate.html','privacy.html',
+  'forms.html','admin.html','robots.txt','sitemap.xml','netlify.toml',
+  'css/style.css','js/config.js','js/app.js','SQUARE-SETUP.md','START-HERE.md'
+];
+const STATIC_ASSETS = ['logo.png','defense-sheets.jpg','defense-sheets.webp','afterpay-logo.png'];
+
+async function exportAll(){
+  if (!inv.length){ toast('Add some inventory first', true); return; }
+
+  if (location.protocol === 'file:'){
+    toast('Open admin from sofacyclecanada.ca/admin.html to build the full site', true);
+    return;
+  }
+
+  toast('Building your full site…');
+  const zip = new JSZip();
+  const missing = [];
+
+  /* 1 — every page and script, fetched from the live site */
+  await Promise.all(SITE_FILES.map(async path=>{
+    try{
+      const r = await fetch(path, {cache:'no-store'});
+      if(!r.ok) throw 0;
+      zip.file(path, await r.text());
+    }catch(e){ missing.push(path); }
+  }));
+
+  /* If the homepage didn't come back, we're not on the live site — stop rather
+     than hand over a broken zip. */
+  if (missing.includes('index.html')){
+    toast('Couldn\'t reach your site files. Run this from sofacyclecanada.ca/admin.html', true);
+    return;
+  }
+
+  /* 2 — the fresh inventory */
+  zip.file('js/inventory.js', buildInventoryJS());
+
+  /* 3 — assets already on the site (static + referenced by inventory) */
+  const assetNames = new Set(STATIC_ASSETS);
+  inv.forEach(s=>{
+    (s.photos && s.photos.length ? s.photos : [s.img]).forEach(fn=>{
+      if (fn && !newImages[fn]) assetNames.add(fn);
+    });
+  });
+  await Promise.all([...assetNames].map(async fn=>{
+    try{
+      const r = await fetch('assets/'+fn, {cache:'no-store'});
+      if(!r.ok) throw 0;
+      zip.file('assets/'+fn, await r.blob());
+    }catch(e){ /* not there — skip quietly */ }
+  }));
+
+  /* 4 — photos you added this session (already in memory) */
+  Object.entries(newImages).forEach(([name, blob]) => zip.file('assets/'+name, blob));
+
+  const n = Object.keys(newImages).length;
+  zip.file('DEPLOY-ME.txt',
+`Sofa Cycle Canada — COMPLETE SITE
+Generated ${new Date().toLocaleString('en-CA')}
+
+This zip is your ENTIRE website — ${inv.length} sofas, all pages, ${n} new photo${n===1?'':'s'}.
+
+TO PUBLISH (works on your phone):
+  1. Go to app.netlify.com and open your Sofa Cycle site.
+  2. Tap "Deploys".
+  3. In the manual-deploy box, tap it and pick THIS zip from Files.
+     (On a computer you can just drag the zip in.)
+  4. Netlify unpacks it and your whole site is live in ~30 seconds.
+
+You do NOT unzip this yourself. Upload the zip as-is.
+Because it's the whole site, it can't wipe your homepage like before.
+`);
+
+  const blob = await zip.generateAsync({type:'blob'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `sofacyclecanada-site-${new Date().toISOString().slice(0,10)}.zip`;
+  a.click();
+  original = JSON.stringify(inv);
+  updateBar();
+  toast('Full site downloaded — upload this one zip to Netlify');
+}
+
+/* ══ PUBLISH LIVE — commit the whole site to GitHub ══
+   Netlify watches the repo, so a commit here triggers a rebuild and the site
+   goes live in ~30s. Uses the GitHub Git Data API to make ONE clean commit with
+   every file, so the site never rebuilds from a half-finished push.
+
+   The token lives only in this browser (localStorage) — never in the site
+   files, never sent anywhere but api.github.com. */
+
+const GH = { owner:'sc_gh_owner', repo:'sc_gh_repo', branch:'sc_gh_branch', token:'sc_gh_token' };
+
+function loadGhConfig(){
+  try{
+    /* Pre-filled for Sofa Cycle — owner and repo are both "sofacyclecanada".
+       Saved values (once you hit Save) always win over these defaults. */
+    $('gh_owner').value  = localStorage.getItem(GH.owner)  || 'sofacyclecanada';
+    $('gh_repo').value   = localStorage.getItem(GH.repo)   || 'sofacyclecanada';
+    $('gh_branch').value = localStorage.getItem(GH.branch) || 'main';
+    $('gh_token').value  = localStorage.getItem(GH.token)  || '';
+    if (localStorage.getItem(GH.token)){
+      $('ghStatus').className = 'pub-status ok';
+      $('ghStatus').textContent = '✅ Connected — press Publish to go live.';
+    }
+  }catch(e){}
+}
+
+function saveGhConfig(){
+  const owner = $('gh_owner').value.trim(), repo = $('gh_repo').value.trim(),
+        branch = $('gh_branch').value.trim() || 'main', token = $('gh_token').value.trim();
+  if (!owner || !repo || !token){
+    $('ghStatus').className='pub-status bad';
+    $('ghStatus').textContent='Fill in username, repository and token.'; return;
+  }
+  try{
+    localStorage.setItem(GH.owner,owner); localStorage.setItem(GH.repo,repo);
+    localStorage.setItem(GH.branch,branch); localStorage.setItem(GH.token,token);
+    $('ghStatus').className='pub-status ok';
+    $('ghStatus').textContent='✅ Saved on this device. Press Publish to go live.';
+    toast('GitHub connection saved');
+  }catch(e){
+    $('ghStatus').className='pub-status bad';
+    $('ghStatus').textContent="This browser blocked saving — you may be in private mode.";
+  }
+}
+
+function clearGhConfig(){
+  if (!confirm('Forget the GitHub connection on this device?')) return;
+  Object.values(GH).forEach(k=>localStorage.removeItem(k));
+  ['gh_owner','gh_repo','gh_token'].forEach(id=>$(id).value=''); $('gh_branch').value='main';
+  $('ghStatus').className='pub-status'; $('ghStatus').textContent='Connection forgotten.';
+}
+
+function ghConfig(){
+  try{
+    const owner=localStorage.getItem(GH.owner), repo=localStorage.getItem(GH.repo),
+          branch=localStorage.getItem(GH.branch)||'main', token=localStorage.getItem(GH.token);
+    if (owner && repo && token) return {owner,repo,branch,token};
+  }catch(e){}
+  return null;
+}
+
+/* GitHub API wrapper */
+async function ghApi(cfg, path, opts={}){
+  const res = await fetch(`https://api.github.com/repos/${cfg.owner}/${cfg.repo}${path}`, {
+    ...opts,
+    headers:{
+      'Authorization':`Bearer ${cfg.token}`,
+      'Accept':'application/vnd.github+json',
+      'X-GitHub-Api-Version':'2022-11-28',
+      ...(opts.body ? {'Content-Type':'application/json'} : {})
+    }
+  });
+  return res;
+}
+
+function blobToB64(blob){
+  return new Promise((resolve,reject)=>{
+    const r = new FileReader();
+    r.onload = ()=>resolve(String(r.result).split(',')[1]);   // strip data: prefix
+    r.onerror = reject;
+    r.readAsDataURL(blob);
+  });
+}
+
+/* Collect every file of the site as {path, blob} */
+async function gatherFilesForGit(){
+  const files = [];
+  await Promise.all(SITE_FILES.map(async path=>{
+    try{ const r=await fetch(path,{cache:'no-store'}); if(r.ok) files.push({path, blob:await r.blob()}); }catch(e){}
+  }));
+  if (!files.some(f=>f.path==='index.html')) return null;   // not on live site
+  files.push({ path:'js/inventory.js', blob:new Blob([buildInventoryJS()],{type:'text/javascript'}) });
+  const assetNames = new Set(STATIC_ASSETS);
+  inv.forEach(s=>(s.photos&&s.photos.length?s.photos:[s.img]).forEach(fn=>{ if(fn&&!newImages[fn]) assetNames.add(fn); }));
+  await Promise.all([...assetNames].map(async fn=>{
+    try{ const r=await fetch('assets/'+fn,{cache:'no-store'}); if(r.ok) files.push({path:'assets/'+fn, blob:await r.blob()}); }catch(e){}
+  }));
+  Object.entries(newImages).forEach(([fn,blob])=>files.push({path:'assets/'+fn, blob}));
+  return files;
+}
+
+/* small concurrency pool so we don't fire 40 requests at once */
+async function pool(items, size, fn){
+  const out=[]; let i=0;
+  async function worker(){ while(i<items.length){ const idx=i++; out[idx]=await fn(items[idx], idx); } }
+  await Promise.all(Array.from({length:Math.min(size,items.length)}, worker));
+  return out;
+}
+
+let publishing = false;
+async function publishLive(){
+  const cfg = ghConfig();
+  if (!cfg){
+    toast('Open ⚙️ Live publish setup first', true);
+    $('pubPanel').open = true;
+    $('pubPanel').scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  if (location.protocol === 'file:'){
+    toast('Publish from sofacyclecanada.ca/admin.html, not a local file', true); return;
+  }
+  if (!inv.length){ toast('Add some inventory first', true); return; }
+  if (publishing) return;
+  if (!confirm('Publish everything to your live site now?')) return;
+  publishing = true;
+
+  const setLog = html => { $('ghStatus').className='pub-status'; $('ghStatus').innerHTML=`<div class="pub-log">${html}</div>`; };
+  $('pubPanel').open = true;
+
+  try{
+    setLog('📦 Gathering your site…');
+    const files = await gatherFilesForGit();
+    if (!files){ throw new Error('Could not read your site files. Run Publish from sofacyclecanada.ca/admin.html.'); }
+
+    /* current branch tip (if the repo already has commits) */
+    setLog(`📦 ${files.length} files ready. Checking your repo…`);
+    let baseCommitSha=null, baseTreeSha=null, refExists=false;
+    let r = await ghApi(cfg, `/git/ref/heads/${cfg.branch}`);
+    if (r.ok){
+      refExists = true;
+      const ref = await r.json(); baseCommitSha = ref.object.sha;
+      const c = await (await ghApi(cfg, `/git/commits/${baseCommitSha}`)).json();
+      baseTreeSha = c.tree.sha;
+    } else if (r.status === 401){ throw new Error('Token rejected (401). Regenerate a fine-grained token with Contents: Read and write.'); }
+    else if (r.status === 404){ /* empty repo or new branch — first publish */ }
+    else { throw new Error(`GitHub error ${r.status} reading the branch. ${(await r.text()).slice(0,140)}`); }
+
+    /* upload each file as a blob */
+    let done=0;
+    const entries = await pool(files, 4, async (f)=>{
+      const content = await blobToB64(f.blob);
+      const br = await ghApi(cfg, '/git/blobs', {method:'POST', body:JSON.stringify({content, encoding:'base64'})});
+      if (!br.ok) throw new Error(`Upload failed for ${f.path} (${br.status}). ${(await br.text()).slice(0,120)}`);
+      const {sha} = await br.json();
+      done++; setLog(`⬆️ Uploading… <b>${done}/${files.length}</b>`);
+      return { path:f.path, mode:'100644', type:'blob', sha };
+    });
+
+    /* build a tree, commit, move the branch */
+    setLog('🌳 Building the commit…');
+    const treeBody = { tree:entries };
+    if (baseTreeSha) treeBody.base_tree = baseTreeSha;
+    const tr = await ghApi(cfg, '/git/trees', {method:'POST', body:JSON.stringify(treeBody)});
+    if (!tr.ok) throw new Error(`Tree failed (${tr.status}). ${(await tr.text()).slice(0,140)}`);
+    const tree = await tr.json();
+
+    const cm = await ghApi(cfg, '/git/commits', {method:'POST', body:JSON.stringify({
+      message:`Update from admin — ${new Date().toLocaleString('en-CA')}`,
+      tree: tree.sha, parents: baseCommitSha ? [baseCommitSha] : []
+    })});
+    if (!cm.ok) throw new Error(`Commit failed (${cm.status}). ${(await cm.text()).slice(0,140)}`);
+    const commit = await cm.json();
+
+    let mv;
+    if (refExists){
+      mv = await ghApi(cfg, `/git/refs/heads/${cfg.branch}`, {method:'PATCH', body:JSON.stringify({sha:commit.sha, force:false})});
+    } else {
+      mv = await ghApi(cfg, '/git/refs', {method:'POST', body:JSON.stringify({ref:`refs/heads/${cfg.branch}`, sha:commit.sha})});
+    }
+    if (!mv.ok) throw new Error(`Publishing the commit failed (${mv.status}). ${(await mv.text()).slice(0,140)}`);
+
+    $('ghStatus').className='pub-status ok';
+    $('ghStatus').innerHTML = `✅ <b>Published!</b> Netlify is rebuilding — your site is live in ~30 seconds.
+      <div class="pub-log" style="margin-top:5px">If nothing changes in a minute, check Netlify is linked to
+      <b>${cfg.owner}/${cfg.repo}</b> (branch <b>${cfg.branch}</b>).</div>`;
+    original = JSON.stringify(inv);
+    updateBar();
+    toast('Published — live in ~30s 🎉');
+  }catch(err){
+    $('ghStatus').className='pub-status bad';
+    $('ghStatus').textContent = '⚠️ ' + (err.message || 'Publish failed.');
+    toast('Publish failed — see the setup panel', true);
+  }finally{
+    publishing = false;
+  }
+}
+
+loadInventory();
+bulkSections = [newSection()];
+renderBulkSections();
+loadGhConfig();
+</script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Form blueprint — Sofa Cycle Canada</title>
+</head>
+<body>
+<!-- ══════════════════════════════════════════════════════════════════
+     NETLIFY FORM BLUEPRINT — not a page anyone visits.
+
+     Netlify detects forms by parsing static HTML at deploy time. Our
+     real forms are built by JavaScript, which Netlify can't see, so
+     these plain copies exist purely so the build bot registers them.
+
+     If you add a field to a form in app.js, add it here too or that
+     field won't be saved.
+     ══════════════════════════════════════════════════════════════════ -->
+<form method='post' name='sofa-reservation'>
+  <input type="hidden" name="form-name" value="sofa-reservation">
+  <input type="hidden" name="bot-field">
+  <input type="text" name="sofa"><input type="text" name="sofa_id"><input type="text" name="name">
+  <input type="tel" name="phone"><input type="text" name="address"><input type="text" name="unit">
+  <input type="text" name="postal"><input type="text" name="delivery_window">
+  <input type="text" name="building_access"><textarea name="notes"></textarea>
+  <input type="text" name="payment_type"><input type="text" name="amount_due_today">
+  <input type="text" name="balance_on_delivery"><input type="text" name="defense_sheets">
+  <input type="text" name="sms_consent">
+</form>
+
+<form method='post' name='sofa-waitlist'>
+  <input type="hidden" name="form-name" value="sofa-waitlist">
+  <input type="hidden" name="bot-field">
+  <input type="text" name="name"><input type="tel" name="phone"><input type="text" name="area">
+  <input type="text" name="looking_for"><input type="text" name="budget">
+</form>
+
+<form method='post' name='sofa-cleaning'>
+  <input type="hidden" name="form-name" value="sofa-cleaning">
+  <input type="hidden" name="bot-field">
+  <input type="text" name="name"><input type="tel" name="phone"><input type="text" name="address">
+  <input type="text" name="postal"><input type="text" name="service"><input type="text" name="addons">
+  <input type="text" name="estimate"><input type="text" name="timing"><textarea name="notes"></textarea>
+  <input type="text" name="sms_consent">
+</form>
+
+<form enctype='multipart/form-data' method='post' name='sofa-donation'>
+  <input type="hidden" name="form-name" value="sofa-donation">
+  <input type="hidden" name="bot-field">
+  <input type="text" name="name"><input type="tel" name="phone"><input type="text" name="address">
+  <input type="text" name="postal"><input type="text" name="unit"><input type="text" name="sofa_type">
+  <input type="text" name="brand"><input type="text" name="age"><input type="text" name="condition">
+  <input type="text" name="disclosures"><input type="text" name="building_access">
+  <input type="text" name="best_time"><textarea name="notes"></textarea><input type="text" name="sms_consent">
+  <input type="file" name="photo1"><input type="file" name="photo2"><input type="file" name="photo3">
+  <input type="file" name="photo4"><input type="file" name="photo5"><input type="file" name="photo6">
+</form>
+</body>
+</html>
